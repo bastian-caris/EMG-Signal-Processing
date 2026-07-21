@@ -1,0 +1,78 @@
+<mujoco model="bipedo_protesico_v1">
+  <compiler angle="degree" coordinate="local" inertiafromgeom="true"/>
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="RK4"/>
+
+  <!-- CABECERA DE CLASES Y COMPONENTES POR DEFECTO -->
+  <default>
+    <default class="sagital">
+      <joint type="hinge" axis="0 1 0" damping="0.05"/>
+    </default>
+    <default class="colision">
+      <geom type="capsule" density="1000" friction="0.9 0.05 0.0001" rgba="0.7 0.7 0.7 0.3"/>
+    </default>
+    <default class="biologico">
+      <geom type="capsule" contype="0" conaffinity="0" rgba="0.8 0.4 0.3 1"/>
+    </default>
+    <default class="protesico">
+      <geom contype="0" conaffinity="0" rgba="0.1 0.4 0.8 1"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <light pos="0 -2 3" dir="0 2 -3" diffuse="0.8 0.8 0.8"/>
+    <geom name="suelo" type="plane" size="3 3 0.1" rgba="0.9 0.9 0.9 1" friction="1 0.005 0.0001"/>
+
+    <!-- PELVIS / CADERA CENTRAL (Suspendida fija a 0.95m de altura) -->
+    <body name="pelvis" pos="0 0 0.95">
+      <!-- Geometría visual de la pelvis (caja central) -->
+      <geom name="vis_pelvis" class="biologico" type="box" size="0.08 0.15 0.05" rgba="0.3 0.3 0.3 1"/>
+
+      <!-- ================= PIERNA DERECHA (Desplazada Y = -0.12m) ================= -->
+      <body name="femur_der" pos="0 -0.12 0">
+        <joint name="cadera_der" class="sagital" range="-45 90"/>
+        <geom name="vis_muslo_der" class="biologico" fromto="0 0 0 0 0 -0.4" size="0.05"/>
+        <geom name="col_muslo_der" class="colision" fromto="0 0 0 0 0 -0.4" size="0.05"/>
+
+        <body name="tibia_der" pos="0 0 -0.4">
+          <joint name="rodilla_der" class="sagital" axis="0 1 0" range="-5 130"/>
+          <geom name="vis_tibia_der" class="biologico" fromto="0 0 0 0 0 -0.4" size="0.04"/>
+          <geom name="col_tibia_der" class="colision" fromto="0 0 0 0 0 -0.4" size="0.04"/>
+
+          <body name="pie_protesico_der" pos="0 0 -0.4">
+            <joint name="tobillo_der" class="sagital" range="-30 30" stiffness="35" damping="1.5"/>
+            <geom name="vis_pie_der" class="protesico" type="box" pos="0.06 0 -0.02" size="0.1 0.03 0.02"/>
+            <geom name="col_pie_der" class="colision" type="box" pos="0.06 0 -0.02" size="0.1 0.03 0.02"/>
+          </body>
+        </body>
+      </body>
+
+      <!-- ================= PIERNA IZQUIERDA (Desplazada Y = +0.12m) ================= -->
+      <body name="femur_izq" pos="0 0.12 0">
+        <joint name="cadera_izq" class="sagital" range="-45 90"/>
+        <geom name="vis_muslo_izq" class="biologico" fromto="0 0 0 0 0 -0.4" size="0.05"/>
+        <geom name="col_muslo_izq" class="colision" fromto="0 0 0 0 0 -0.4" size="0.05"/>
+
+        <body name="tibia_izq" pos="0 0 -0.4">
+          <joint name="rodilla_izq" class="sagital" axis="0 1 0" range="-5 130"/>
+          <geom name="vis_tibia_izq" class="biologico" fromto="0 0 0 0 0 -0.4" size="0.04"/>
+          <geom name="col_tibia_izq" class="colision" fromto="0 0 0 0 0 -0.4" size="0.04"/>
+
+          <body name="pie_protesico_izq" pos="0 0 -0.4">
+            <joint name="tobillo_izq" class="sagital" range="-30 30" stiffness="35" damping="1.5"/>
+            <geom name="vis_pie_izq" class="protesico" type="box" pos="0.06 0 -0.02" size="0.1 0.03 0.02"/>
+            <geom name="col_pie_izq" class="colision" type="box" pos="0.06 0 -0.02" size="0.1 0.03 0.02"/>
+          </body>
+        </body>
+      </body>
+
+    </body>
+  </worldbody>
+
+  <!-- 4 ACTUADORES: Cadera y rodilla para cada pierna -->
+  <actuator>
+    <motor name="motor_cadera_der" joint="cadera_der" gear="50" ctrllimited="true" ctrlrange="-100 100"/>
+    <motor name="motor_rodilla_der" joint="rodilla_der" gear="50" ctrllimited="true" ctrlrange="-100 100"/>
+    <motor name="motor_cadera_izq" joint="cadera_izq" gear="50" ctrllimited="true" ctrlrange="-100 100"/>
+    <motor name="motor_rodilla_izq" joint="rodilla_izq" gear="50" ctrllimited="true" ctrlrange="-100 100"/>
+  </actuator>
+</mujoco>
